@@ -30,11 +30,14 @@ try {
         }
     }
     fs.readdirSync(inputFolder).forEach(file => {
+        console.log(`Processing file: ${file}`);
         if (fs.statSync(file).isFile()) {
+            let fileOut = `${outputFolder}/${file}`;
+            console.log(`Output: ${fileOut}`);
             let dimensions = dimension.split("x");
             sharp(file).png()
                 .resize(parseInt(dimensions[0]), parseInt(dimensions[1]))
-                .toFile(outputFolder + "/" + file)
+                .toFile(fileOut)
                 .then(() => console.log("Successfully resized " + file + " as " + dimension))
                 .catch(error => console.log(error+" | "+file))
         }
