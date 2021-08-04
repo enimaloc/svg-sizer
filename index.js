@@ -25,7 +25,7 @@ try {
                 let filename = line.split('/').pop();
                 const response = await fetch(line);
                 const buffer = await response.buffer();
-                fs.writeFile(`${outputFolder}/${filename}`, buffer, () => {});
+                fs.writeFile(`${inputFolder}/${filename}`, buffer, () => {});
             });
         }
     }
