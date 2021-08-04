@@ -9,7 +9,7 @@ inputs:
 
   input-folder:
     description: "Folder where getting svg to resize"
-    default: '.'
+    default: './in'
     required: false
 
   input-file:
