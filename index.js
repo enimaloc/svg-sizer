@@ -3,12 +3,15 @@ const fetch = require('node-fetch');
 const core = require("@actions/core");
 const sharp = require("sharp")
 
-const outputFolder = core.getInput("output-folder");
-const inputFolder = core.getInput("input-folder");
-const inputFile = core.getInput("input-file");
-const dimension = core.getInput("dimension");
+const outputFolder = core.getInput("output-folder") || './out';
+const inputFolder = core.getInput("input-folder") || './in';
+const inputFile = core.getInput("input-file") || './in.txt';
+const dimension = core.getInput("dimension") || '16x16';
 
 try {
+    if (!fs.existsSync(outputFolder)) {
+        fs.mkdirSync(outputFolder)
+    }
     let exist = fs.existsSync(inputFolder);
     if (!exist) {
         fs.mkdirSync(inputFolder);
@@ -22,8 +25,7 @@ try {
                 let filename = line.split('/').pop();
                 const response = await fetch(line);
                 const buffer = await response.buffer();
-                fs.writeFile(`${outputFolder}/${filename}`, buffer, () =>
-                    console.log('finished downloading!'));
+                fs.writeFile(`${outputFolder}/${filename}`, buffer, () => {});
             });
         }
     }
@@ -40,5 +42,6 @@ try {
         fs.rmdirSync(inputFolder)
     }
 } catch (error) {
+    console.log(error);
     core.setFailed(error)
 }
