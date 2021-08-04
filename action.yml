@@ -1,0 +1,26 @@
+name: 'svg-sizer'
+description: 'permit to resize svg in github actions'
+
+inputs:
+  output-folder:
+    description: "Folder where export the svg"
+    default: './out'
+    required: false
+
+  input-folder:
+    description: "Folder where getting svg to resize"
+    default: '.'
+    required: false
+
+  input-file:
+    description: "If you want to have url list"
+    default: 'svgToResize.txt'
+    required: false
+
+  dimension:
+    description: "Target dimension"
+    required: true
+
+runs:
+  using: 'node12'
+  main: 'index.js'
