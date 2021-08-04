@@ -36,7 +36,7 @@ try {
                 .resize(parseInt(dimensions[0]), parseInt(dimensions[1]))
                 .toFile(outputFolder + "/" + file)
                 .then(() => console.log("Successfully resized " + file + " as " + dimension))
-                .catch(error => console.log(error))
+                .catch(error => console.log(error+" | "+file))
         }
     });
     if (!exist) {
