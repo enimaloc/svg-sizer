@@ -17,7 +17,7 @@ try {
         fs.mkdirSync(inputFolder);
         if (fs.existsSync(inputFile)) {
             let lineReader = require('readline').createInterface({
-                input: require('fs').createReadStream(inputFile)
+                input: fs.createReadStream(inputFile)
             });
 
             lineReader.on('line', async function (line) {
@@ -36,6 +36,7 @@ try {
                 .resize(parseInt(dimensions[0]), parseInt(dimensions[1]))
                 .toFile(outputFolder + "/" + file)
                 .then(() => console.log("Successfully resized " + file + " as " + dimension))
+                .catch(error => console.log(error))
         }
     });
     if (!exist) {
