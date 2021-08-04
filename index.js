@@ -30,7 +30,7 @@ try {
         }
     }
     fs.readdirSync(inputFolder).forEach(file => {
-        if (fs.stat(file).isFile()) {
+        if (fs.statSync(file).isFile()) {
             let dimensions = dimension.split("x");
             sharp(file).png()
                 .resize(parseInt(dimensions[0]), parseInt(dimensions[1]))
