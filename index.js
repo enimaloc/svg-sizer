@@ -1,7 +1,7 @@
 const fs = require("fs");
-const fetch = require('node-fetch');
 const core = require("@actions/core");
 const sharp = require("sharp")
+const axios = require("axios");
 
 const outputFolder = core.getInput("output-folder") || './out';
 const inputFolder = core.getInput("input-folder") || './in';
@@ -14,7 +14,6 @@ try {
     }
     let exist = fs.existsSync(inputFolder);
     if (!exist) {
-        fs.mkdirSync(inputFolder);
         if (fs.existsSync(inputFile)) {
             let lineReader = require('readline').createInterface({
                 input: fs.createReadStream(inputFile)
@@ -23,27 +22,37 @@ try {
             lineReader.on('line', async function (line) {
                 console.log(line);
                 let filename = line.split('/').pop();
-                const response = await fetch(line);
-                const buffer = await response.buffer();
-                fs.writeFile(`${inputFolder}/${filename}`, buffer, () => {});
+
+                const response = await axios.get(line,  { responseType: 'arraybuffer' })
+                const buffer = Buffer.from(response.data, "utf-8")
+
+                console.log(`Processing file: ${line}`);
+                let fileOut = `${outputFolder}/${filename.split('.').slice(0, -1).join('.')}.png`;
+                console.log(`Output: ${fileOut}`);
+                let dimensions = dimension.split("x");
+                sharp(buffer)
+                    .png()
+                    .resize(parseInt(dimensions[0]), parseInt(dimensions[1]))
+                    .toFile(fileOut)
+                    .then(() => console.log("Successfully resized " + line + " as " + dimension))
+                    .catch(error => console.log(error + " | " + line))
             });
+
         }
-    }
-    fs.readdirSync(inputFolder).forEach(file => {
-        console.log(`Processing file: ${file}`);
-        if (fs.statSync(file).isFile()) {
-            let fileOut = `${outputFolder}/${file}`;
-            console.log(`Output: ${fileOut}`);
-            let dimensions = dimension.split("x");
-            sharp(file).png()
-                .resize(parseInt(dimensions[0]), parseInt(dimensions[1]))
-                .toFile(fileOut)
-                .then(() => console.log("Successfully resized " + file + " as " + dimension))
-                .catch(error => console.log(error+" | "+file))
-        }
-    });
-    if (!exist) {
-        fs.rmdirSync(inputFolder)
+    } else {
+        fs.readdirSync(inputFolder).forEach(file => {
+            console.log(`Processing file: ${inputFolder}/${file}`);
+            if (fs.statSync(`${inputFolder}/${file}`).isFile()) {
+                let fileOut = `${outputFolder}/${file.split('.').slice(0, -1).join('.')}.png`;
+                console.log(`Output: ${fileOut}`);
+                let dimensions = dimension.split("x");
+                sharp(`${inputFolder}/${file}`).png()
+                    .resize(parseInt(dimensions[0]), parseInt(dimensions[1]))
+                    .toFile(fileOut)
+                    .then(() => console.log(`Successfully resized ${inputFolder}/${file} as ${dimension}`))
+                    .catch(error => console.log(error+" | "+`${inputFolder}/${file}`));
+            }
+        });
     }
 } catch (error) {
     console.log(error);
